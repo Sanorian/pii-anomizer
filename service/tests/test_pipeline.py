@@ -157,7 +157,7 @@ class TestPipeline:
     def test_spam_message(self, pipeline):
         text = (
             "Здравствуйте. Я ваша одногруппница. Напишите в вацап на номер "
-            "8 950 784 55 53. Вас добавят в беседу группы. РОСДИСТАНТ ПСИХОЛОГИЯ ТГУ"
+            "8 950 784 55 53. Вас добавят в беседу группы. УНИВЕРСИТЕТ ПСИХОЛОГИЯ ВУЗ"
         )
         res = pipeline.run(text, threshold=0.45)
         masked, ents = mask_text(text, res.entities)
@@ -168,7 +168,7 @@ class TestPipeline:
         assert "organization" in cats
 
     def test_person_and_contacts(self, pipeline):
-        text = "Меня зовут Валерия, помогаю студентам ТГУ. Пишите на ivanov_2024@mail.ru"
+        text = "Меня зовут Валерия, помогаю студентам университета. Пишите на ivanov_2024@mail.ru"
         res = pipeline.run(text)
         masked, ents = mask_text(text, res.entities)
         assert "[PERSON]" in masked

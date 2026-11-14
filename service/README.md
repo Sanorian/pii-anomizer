@@ -35,18 +35,18 @@ docker compose up --build
 ```bash
 curl -X POST http://localhost:8000/anonymize \
   -H "Content-Type: application/json" \
-  -d '{"text": "Здравствуйте! Я ваша одногруппница, напишите в вацап 8 950 784 55 53. ТГУ РОСДИСТАНТ"}'
+  -d '{"text": "Здравствуйте! Меня зовут Иванов, напишите в вацап 8 950 784 55 53. Компания ТехноСофт"}'
 ```
 
 Ответ:
 
 ```json
 {
-  "anonymized_text": "Здравствуйте! Я ваша одногруппница, напишите в вацап [PHONE]. [ORG]",
+  "anonymized_text": "Здравствуйте! Меня зовут [PERSON], напишите в вацап [PHONE]. Компания [ORG]",
   "entities": [
-    {"start": 54, "end": 67, "text": "8 950 784 55 53", "category": "phone",
+    {"start": 50, "end": 65, "text": "8 950 784 55 53", "category": "phone",
      "placeholder": "[PHONE]", "source": "regex", "score": 1.0},
-    {"start": 69, "end": 84, "text": "ТГУ РОСДИСТАНТ", "category": "organization",
+    {"start": 76, "end": 85, "text": "ТехноСофт", "category": "organization",
      "placeholder": "[ORG]", "source": "gliner", "score": 0.99}
   ],
   "stats": {"phone": 1, "organization": 1}
