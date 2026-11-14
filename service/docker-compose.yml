@@ -1,0 +1,24 @@
+services:
+  anonymization:
+    build: .
+    container_name: anonymization-service
+    ports:
+      # 8001: порт 8000 занят другим проектом (spam-lb)
+      - "8001:8000"
+    volumes:
+      # Модели из репозитория anonimization (gliner_ru_finetuned + natasha cache)
+      - ../models:/models:ro
+      # Кэш Natasha (эмбеддинги) — чтобы не качать при каждом старте
+      - natasha_cache:/tmp/natasha
+    environment:
+      - GLINER_MODEL_DIR=/models/gliner_ru_finetuned_v2
+      # Ограничение потоков torch на CPU
+      - OMP_NUM_THREADS=4
+    deploy:
+      resources:
+        limits:
+          memory: 4g
+    restart: unless-stopped
+
+volumes:
+  natasha_cache:

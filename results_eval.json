@@ -1,0 +1,230 @@
+{
+  "device": "mps",
+  "threshold": 0.4,
+  "models": {
+    "gliner_multi": {
+      "model": "gliner_multi",
+      "strict": {
+        "p": 0.46153846153846156,
+        "r": 0.6486486486486487,
+        "f1": 0.5393258426966292
+      },
+      "lenient": {
+        "p": 0.4909090909090909,
+        "r": 0.7297297297297297,
+        "f1": 0.5869565217391305
+      },
+      "per_label": {
+        "person": {
+          "gold": 10,
+          "found": 10,
+          "exact": 9
+        },
+        "organization": {
+          "gold": 4,
+          "found": 4,
+          "exact": 3
+        },
+        "location": {
+          "gold": 5,
+          "found": 5,
+          "exact": 5
+        },
+        "phone": {
+          "gold": 3,
+          "found": 0,
+          "exact": 0
+        },
+        "email": {
+          "gold": 2,
+          "found": 2,
+          "exact": 2
+        },
+        "url": {
+          "gold": 5,
+          "found": 3,
+          "exact": 3
+        },
+        "money": {
+          "gold": 5,
+          "found": 3,
+          "exact": 2
+        },
+        "group_code": {
+          "gold": 3,
+          "found": 0,
+          "exact": 0
+        }
+      },
+      "time": 0.974668025970459
+    },
+    "multitask_large": {
+      "model": "multitask_large",
+      "strict": {
+        "p": 0.6486486486486487,
+        "r": 0.6486486486486487,
+        "f1": 0.6486486486486487
+      },
+      "lenient": {
+        "p": 0.7111111111111111,
+        "r": 0.8648648648648649,
+        "f1": 0.7804878048780488
+      },
+      "per_label": {
+        "person": {
+          "gold": 10,
+          "found": 10,
+          "exact": 9
+        },
+        "organization": {
+          "gold": 4,
+          "found": 4,
+          "exact": 1
+        },
+        "location": {
+          "gold": 5,
+          "found": 4,
+          "exact": 3
+        },
+        "phone": {
+          "gold": 3,
+          "found": 3,
+          "exact": 3
+        },
+        "email": {
+          "gold": 2,
+          "found": 2,
+          "exact": 2
+        },
+        "url": {
+          "gold": 5,
+          "found": 4,
+          "exact": 2
+        },
+        "money": {
+          "gold": 5,
+          "found": 2,
+          "exact": 1
+        },
+        "group_code": {
+          "gold": 3,
+          "found": 3,
+          "exact": 3
+        }
+      },
+      "time": 1.4554080963134766
+    },
+    "ru_finetuned": {
+      "model": "ru_finetuned",
+      "strict": {
+        "p": 0.5609756097560976,
+        "r": 0.6216216216216216,
+        "f1": 0.5897435897435899
+      },
+      "lenient": {
+        "p": 0.5909090909090909,
+        "r": 0.7027027027027027,
+        "f1": 0.6419753086419754
+      },
+      "per_label": {
+        "person": {
+          "gold": 10,
+          "found": 10,
+          "exact": 10
+        },
+        "organization": {
+          "gold": 4,
+          "found": 3,
+          "exact": 2
+        },
+        "location": {
+          "gold": 5,
+          "found": 5,
+          "exact": 5
+        },
+        "phone": {
+          "gold": 3,
+          "found": 0,
+          "exact": 0
+        },
+        "email": {
+          "gold": 2,
+          "found": 2,
+          "exact": 2
+        },
+        "url": {
+          "gold": 5,
+          "found": 3,
+          "exact": 2
+        },
+        "money": {
+          "gold": 5,
+          "found": 3,
+          "exact": 2
+        },
+        "group_code": {
+          "gold": 3,
+          "found": 0,
+          "exact": 0
+        }
+      },
+      "time": 0.8719017505645752
+    },
+    "ru_finetuned_v2": {
+      "model": "ru_finetuned_v2",
+      "strict": {
+        "p": 0.6976744186046512,
+        "r": 0.8108108108108109,
+        "f1": 0.75
+      },
+      "lenient": {
+        "p": 0.7111111111111111,
+        "r": 0.8648648648648649,
+        "f1": 0.7804878048780488
+      },
+      "per_label": {
+        "person": {
+          "gold": 10,
+          "found": 10,
+          "exact": 9
+        },
+        "organization": {
+          "gold": 4,
+          "found": 3,
+          "exact": 2
+        },
+        "location": {
+          "gold": 5,
+          "found": 5,
+          "exact": 5
+        },
+        "phone": {
+          "gold": 3,
+          "found": 3,
+          "exact": 3
+        },
+        "email": {
+          "gold": 2,
+          "found": 2,
+          "exact": 2
+        },
+        "url": {
+          "gold": 5,
+          "found": 4,
+          "exact": 4
+        },
+        "money": {
+          "gold": 5,
+          "found": 2,
+          "exact": 2
+        },
+        "group_code": {
+          "gold": 3,
+          "found": 3,
+          "exact": 3
+        }
+      },
+      "time": 0.7376840114593506
+    }
+  }
+}

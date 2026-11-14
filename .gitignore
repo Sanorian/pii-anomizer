@@ -1,0 +1,25 @@
+# Виртуальное окружение и кэши
+venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Модели (скачиваются с Hugging Face — см. README)
+models/
+
+# Сторонние датасеты (скачиваются отдельно — см. README «Данные»)
+benchmark/pii_benchmark_raw.jsonl
+benchmark/pii_train/
+data_nerel/
+
+# Производные обучающие данные (генерируются скриптами из сторонних датасетов)
+data_ft/pii_train_gliner.json
+data_ft/train*.json
+data_ft/dev_v3.json
+data_natasha/
+
+# Логи и временные файлы
+*.log
+train_log*.txt
+.nojekyll
+eval_*.txt
