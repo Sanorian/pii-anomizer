@@ -32,8 +32,7 @@ huggingface-cli download Sanorian/gliner-ru-pii \
 huggingface-cli download Sanorian/slovnet-ner-ru-pii \
     --local-dir models
 
-# 3. Поднять сервис (порт 8001 -> 8000)
-cd service
+# 3. Поднять сервис (порт 8001 -> 8000), из корня репозитория
 docker compose up --build
 ```
 
@@ -130,7 +129,8 @@ mask_text()          ── замена плейсхолдерами, оффс�
 ## Структура репозитория
 
 ```
-service/               FastAPI-сервис (app/, tests/, Dockerfile, docker-compose.yml)
+docker-compose.yml     запуск сервиса из корня (порт 8001 -> 8000)
+service/               FastAPI-сервис (app/, tests/, Dockerfile, requirements)
 ```
 
 Модели дообучались на синтетике и открытых корпусах — скрипты обучения

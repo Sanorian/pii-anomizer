@@ -21,11 +21,11 @@ cd service
 ### Docker
 
 ```bash
-cd service
+# из корня репозитория (docker-compose.yml в корне, собирает из service/)
 docker compose up --build
 ```
 
-Модели монтируются из `../models` (read-only). Сервис на CPU: GLiNER ~0.3 c на
+Модели монтируются из `./models` (read-only). Сервис на CPU: GLiNER ~0.3 c на
 сообщение, Natasha ~5 мс, regex мгновенно.
 
 ## API

@@ -1,13 +1,13 @@
 services:
   anonymization:
-    build: .
+    build: ./service
     container_name: anonymization-service
     ports:
       # 8001: порт 8000 занят другим проектом (spam-lb)
       - "8001:8000"
     volumes:
-      # Модели из репозитория anonimization (gliner_ru_finetuned + natasha cache)
-      - ../models:/models:ro
+      # Модели, скачанные с Hugging Face (см. README «Быстрый старт»)
+      - ./models:/models:ro
       # Кэш Natasha (эмбеддинги) — чтобы не качать при каждом старте
       - natasha_cache:/tmp/natasha
     environment:
