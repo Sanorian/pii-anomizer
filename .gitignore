@@ -7,19 +7,18 @@ __pycache__/
 # Модели (скачиваются с Hugging Face — см. README)
 models/
 
-# Сторонние датасеты (скачиваются отдельно — см. README «Данные»)
-benchmark/pii_benchmark_raw.jsonl
-benchmark/pii_train/
-data_nerel/
+# Скрипты обучения/eval/конвертации данных — dev-инструменты, не прод
+*.py
+!service/**/*.py
 
-# Производные обучающие данные (генерируются скриптами из сторонних датасетов)
-data_ft/pii_train_gliner.json
-data_ft/train*.json
-data_ft/dev_v3.json
+# Сторонние датасеты и производные обучающие данные
+benchmark/
+data_ft/
 data_natasha/
+data_nerel/
+hf_publish/
 
-# Логи и временные файлы
+# Отчёты разработки и логи
+SERVICE_REPORT.md
 *.log
 train_log*.txt
-.nojekyll
-eval_*.txt

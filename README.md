@@ -131,35 +131,10 @@ mask_text()          ── замена плейсхолдерами, оффс�
 
 ```
 service/               FastAPI-сервис (app/, tests/, Dockerfile, docker-compose.yml)
-eval_benchmark.py      eval на pii_benchmark (strict/overlap, per-category, --gliner/--threshold)
-convert_nerel.py       конвертация корпуса NEREL в GLiNER span-формат
-convert_pii_train.py   конвертация redmadrobot-rnd/pii_train (BIO -> span, дедуп)
-prepare_natasha_data.py  подготовка BIO-данных для Slovnet (NEREL + синтетика)
-train_gliner_ru.py     дообучение GLiNER (early stopping, MPS/CPU)
-train_natasha.py       дообучение Slovnet NER
-gen_synth_domain.py    генерация доменной синтетики (адреса, документы, ОМС…)
-gen_synth_weak_v2.py   генерация weak-supervision синтетики
-benchmark/             eval-скрипты логов, eval_results*.json по версиям моделей
-data_ft/               конвертированные обучающие данные (см. «Данные»)
 ```
 
-## Данные
-
-Сторонние датасеты не хранятся в репо — скачиваются:
-
-- `redmadrobot-rnd/pii_benchmark` — eval
-  (`benchmark/pii_benchmark_raw.jsonl`, 3.2 MB);
-- `redmadrobot-rnd/pii_train` — опционально, для воспроизведения
-  эксперимента с дообучением на нём (`convert_pii_train.py`);
-- [NEREL](https://github.com/natasha/nerel) — корпус новостей с BIO-разметкой
-  (`data_nerel/`, использовался в ранних версиях обучения).
-
-Обучающие JSON в `data_ft/` генерируются конвертерами из этих датасетов
-(`convert_*`), либо берутся из нашей синтетики (`gen_synth_*.py`).
-
-Наши синтетические данные (`synth_domain.json`, `synth_weak_v2.json`)
-в репо есть: сгенерированы скриптами `gen_synth_*.py`, реальных ПДн
-не содержат.
+Модели дообучались на синтетике и открытых корпусах — скрипты обучения
+и подготовки данных в репо не входят, только продовый сервис.
 
 ## Тесты
 
