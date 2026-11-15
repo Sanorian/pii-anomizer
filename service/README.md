@@ -26,7 +26,12 @@ docker compose up --build
 ```
 
 Модели монтируются из `./models` (read-only). Сервис на CPU: GLiNER ~0.3 c на
-сообщение, Natasha ~5 мс, regex мгновенно.
+сообщение, Natasha ~5 мс, regex мгновенно. Вместе с сервисом поднимается
+контейнер **guardrails** (порт 8002): проверка входных текстов на
+промпт-инъекции (правила RU+EN + ML-модель) — см. корневой README,
+раздел «Guardrails». Проверка включена по умолчанию, отключается
+полем запроса `"check_injection": false`; при недоступности guardrails
+анонимизация продолжается (fail-open).
 
 ## API
 
@@ -104,6 +109,9 @@ cd service
 ```
 POST /anonymize
    │
+   ▼
+guardrails /scan    ── промпт-инъекции: правила RU+EN + mdeberta-ru
+   │                   (report: флаг в ответе; block: отказ; fail-open)
    ▼
 AnonymizationPipeline
    ├─ RegexDetector      ── телефоны, e-mail, URL, карты (Luhn), счета,

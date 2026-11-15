@@ -22,3 +22,4 @@ hf_publish/
 SERVICE_REPORT.md
 *.log
 train_log*.txt
+harness/node_modules/

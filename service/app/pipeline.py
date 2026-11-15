@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 
 from app.config import PLACEHOLDERS
@@ -123,20 +124,40 @@ class AnonymizationPipeline:
         return sorted(kept, key=lambda e: e["start"])
 
 
-def mask_text(text: str, entities: list[dict]) -> tuple[str, list[dict]]:
+def mask_text(
+    text: str,
+    entities: list[dict],
+    placeholders: dict[str, str] | None = None,
+    assigner=None,
+) -> tuple[str, list[dict]]:
     """Заменяет сущности плейсхолдерами.
 
     Возвращает (замаскированный текст, список замаскированных сущностей).
     Сущности должны быть отсортированы и не пересекаться.
+
+    assigner(category, value) -> placeholder: кастомная выдача плейсхолдеров
+    (vault со стабильными ID в рамках сессии). Если None, используется
+    локальная нумерация [CATEGORY_1..N] в рамках этого текста.
     """
     parts = []
     cursor = 0
     masked_entities = []
+    local_nums: dict[str, int] = {}
     for e in sorted(entities, key=lambda x: x["start"]):
-        placeholder = PLACEHOLDERS.get(e["category"], "[SENSITIVE]")
+        original = text[e["start"] : e["end"]]
+        if assigner is not None:
+            placeholder = assigner(e["category"], original)
+        else:
+            n = local_nums.get(e["category"], 0) + 1
+            local_nums[e["category"]] = n
+            base = (placeholders or PLACEHOLDERS).get(e["category"], "[SENSITIVE]")
+            # [PERSON] -> [PERSON_1]
+            placeholder = re.sub(r"\]$", f"_{n}]", base)
         parts.append(text[cursor : e["start"]])
         parts.append(placeholder)
-        masked_entities.append({**e, "text": text[e["start"] : e["end"]], "placeholder": placeholder})
+        masked_entities.append(
+            {**e, "text": original, "placeholder": placeholder}
+        )
         cursor = e["end"]
     parts.append(text[cursor:])
     return "".join(parts), masked_entities

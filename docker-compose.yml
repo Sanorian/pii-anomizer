@@ -12,13 +12,68 @@ services:
       - natasha_cache:/tmp/natasha
     environment:
       - GLINER_MODEL_DIR=/models/gliner_ru_finetuned_v2
+      # Guardrails: проверка входа на промпт-инъекции
+      - GUARDRAILS_URL=http://guardrails:8000
+      # report — флаг в ответе; block — blocked=true, текст не обрабатывается
+      - GUARDRAILS_MODE=report
+      # Vault: хранение анонимизаций (postgres | memory)
+      - VAULT_BACKEND=postgres
+      - VAULT_DSN=postgresql://vault:vault@postgres:5432/vault
+      - VAULT_TTL_HOURS=24
       # Ограничение потоков torch на CPU
       - OMP_NUM_THREADS=4
+    depends_on:
+      guardrails:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
     deploy:
       resources:
         limits:
-          memory: 4g
+          # GLiNER+Natasha+torch: пик при загрузке ~5 ГБ (4 ГБ мало — OOM kill 137)
+          memory: 6g
+    restart: unless-stopped
+
+  guardrails:
+    build: ./guardrails
+    container_name: guardrails-service
+    ports:
+      - "8002:8000"
+    volumes:
+      # Кэш модели инъекций (gbv/mdeberta-ru-prompt-injection, ~600 MB) —
+      # качается при первом старте
+      - guardrails_model:/models_cache
+    environment:
+      - GUARDRAILS_BLOCK_THRESHOLD=0.7
+      - GUARDRAILS_REVIEW_THRESHOLD=0.4
+      - OMP_NUM_THREADS=2
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: anonymization-vault-db
+    # 5432 занята другим проектом (tutor_postgres) — наружу не выставляем,
+    # доступ только из сети compose; для отладки: docker exec ... psql
+    expose:
+      - "5432"
+    environment:
+      - POSTGRES_USER=vault
+      - POSTGRES_PASSWORD=vault
+      - POSTGRES_DB=vault
+    volumes:
+      - vault_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vault -d vault"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     restart: unless-stopped
 
 volumes:
   natasha_cache:
+  guardrails_model:
+  vault_db:

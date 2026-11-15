@@ -1,0 +1,22 @@
+{
+  "name": "pii-guard",
+  "version": "1.0.0",
+  "description": "PII Guard для Pi coding agent: анонимизация ПДн перед LLM, деанонимизация ответов, скан промпт-инъекций (ввод, скиллы, tool_result)",
+  "license": "MIT",
+  "author": "Крайнов Александр Витальевич - Fullstack/ML-разработчик",
+  "type": "module",
+  "pi": {
+    "extensions": [
+      "./index.ts"
+    ]
+  },
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@earendil-works/pi-coding-agent": "^1.5.2",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}
