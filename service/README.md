@@ -118,3 +118,13 @@ _resolve_overlaps()  ── union-слияние: приоритет источ�
    ▼
 mask_text()          ── замена плейсхолдерами, оффсеты оригинала сохранены
 ```
+
+## Автор
+
+**Крайнов Александр Витальевич** — Fullstack/ML-разработчик
+([Hugging Face](https://huggingface.co/Sanorian),
+[GitHub](https://github.com/Sanorian))
+
+## Лицензия
+
+MIT

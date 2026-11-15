@@ -157,6 +157,12 @@ cd service
 Обе модели MIT, обучены без реальных персональных данных — детали в
 model cards.
 
+## Автор
+
+**Крайнов Александр Витальевич** — Fullstack/ML-разработчик
+([Hugging Face](https://huggingface.co/Sanorian),
+[GitHub](https://github.com/Sanorian))
+
 ## Лицензия
 
 MIT
