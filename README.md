@@ -1,4 +1,8 @@
-# PII Anomizer — сервис анонимизации русских текстов
+# PII Safety — анонимизация и защита LLM-агентов
+
+Комплекс защиты персональных данных при работе с LLM: сервис анонимизации
+русских текстов, guardrails от промпт-инъекций и harness-extension для
+coding-агента [Pi](https://github.com/earendil-works/pi).
 
 Маскирование персональных данных (ПДн) и коммерчески чувствительной
 информации в русскоязычных текстах. Гибрид трёх детекторов:
@@ -67,18 +71,42 @@ curl -X POST http://localhost:8001/anonymize \
 
 ```json
 {
-  "anonymized_text": "Здравствуйте! Меня зовут [PERSON], напишите в вацап [PHONE]. Компания [ORG]",
+  "anonymized_text": "Здравствуйте! Меня зовут [PERSON_1], напишите в вацап [PHONE_1]. Компания [ORG_1]",
   "entities": [
     {"start": 50, "end": 65, "text": "8 950 784 55 53", "category": "phone",
-     "placeholder": "[PHONE]", "source": "regex", "score": 1.0},
+     "placeholder": "[PHONE_1]", "source": "regex", "score": 1.0},
     {"start": 76, "end": 85, "text": "ТехноСофт", "category": "organization",
-     "placeholder": "[ORG]", "source": "gliner", "score": 0.99}
-  ]
+     "placeholder": "[ORG_1]", "source": "gliner", "score": 0.99}
+  ],
+  "vault_key": "2d0b54ed-f733-4b2c-ba0c-d5e91f16409f"
 }
 ```
 
 Параметры: `text` (до 16 000 символов), `threshold` (порог GLiNER,
-по умолчанию 0.45), `categories` (список категорий для маскирования).
+по умолчанию 0.45), `categories` (список категорий для маскирования),
+`vault_key` (ключ vault-сессии; None — сервис создаст новую сессию и
+вернёт ключ).
+
+Плейсхолдеры номерованные и стабильные в рамках vault-сессии: та же
+сущность («Иванов») в любом сообщении сессии → тот же `[PERSON_1]`.
+Ответ LLM деанонимизируется через `POST /deanonymize` с этим ключом.
+
+### `POST /deanonymize`
+
+Обратное преобразование: плейсхолдеры → реальные значения по ключу
+vault-сессии (для ответов LLM, результатов инструментов — см. Harness).
+
+```bash
+curl -X POST http://localhost:8001/deanonymize \
+  -H "Content-Type: application/json" \
+  -d '{"text": "[PERSON_1] подтвердил отправку", "vault_key": "2d0b54ed-…"}'
+```
+
+```json
+{"text": "Иванов подтвердил отправку", "replaced": 1}
+```
+
+Неизвестные плейсхолдеры остаются как есть; просроченный/чужой ключ — 404.
 
 ### `GET /categories`, `GET /health`
 
@@ -88,24 +116,24 @@ curl -X POST http://localhost:8001/anonymize \
 
 | Категория | Плейсхолдер | Детектор |
 |---|---|---|
-| phone | `[PHONE]` | regex |
-| email | `[EMAIL]` | regex |
-| url | `[URL]` | regex (http, www, t.me, @ники) |
-| card | `[CARD]` | regex + Luhn |
-| account | `[ACCOUNT]` | regex (20 цифр) |
-| snils | `[SNILS]` | regex |
-| inn | `[INN]` | regex |
-| passport | `[PASSPORT]` | regex |
-| oms | `[OMS]` | regex (16 цифр + контекст «полис/ОМС») |
-| doc_number | `[DOC_NUMBER]` | regex (ВУ, свидетельство, военный билет) |
-| money | `[MONEY]` | regex + GLiNER |
-| person | `[PERSON]` | GLiNER + Natasha |
-| organization | `[ORG]` | GLiNER + Natasha |
-| location | `[LOCATION]` | GLiNER + Natasha |
-| profession | `[PROFESSION]` | GLiNER |
-| age | `[AGE]` | GLiNER |
-| date | `[DATE]` | GLiNER |
-| group_code | `[GROUP_CODE]` | GLiNER |
+| phone | `[PHONE_1]`… | regex |
+| email | `[EMAIL_1]`… | regex |
+| url | `[URL_1]`… | regex (http, www, t.me, @ники) |
+| card | `[CARD_1]`… | regex + Luhn |
+| account | `[ACCOUNT_1]`… | regex (20 цифр) |
+| snils | `[SNILS_1]`… | regex |
+| inn | `[INN_1]`… | regex |
+| passport | `[PASSPORT_1]`… | regex |
+| oms | `[OMS_1]`… | regex (16 цифр + контекст «полис/ОМС») |
+| doc_number | `[DOC_NUMBER_1]`… | regex (ВУ, свидетельство, военный билет) |
+| money | `[MONEY_1]`… | regex + GLiNER |
+| person | `[PERSON_1]`… | GLiNER + Natasha |
+| organization | `[ORG_1]`… | GLiNER + Natasha |
+| location | `[LOCATION_1]`… | GLiNER + Natasha |
+| profession | `[PROFESSION_1]`… | GLiNER |
+| age | `[AGE_1]`… | GLiNER |
+| date | `[DATE_1]`… | GLiNER |
+| group_code | `[GROUP_CODE_1]`… | GLiNER |
 
 ## Guardrails (защита от промпт-инъекций)
 
@@ -150,10 +178,66 @@ curl -X POST http://localhost:8002/scan \
  "matched_rules": [{"rule": "ru:ignore_instructions", ...}]}
 ```
 
+## Harness (extension для Pi coding agent)
+
+`harness/` — расширение [pii-guard](harness/README.md) для coding-агента
+[Pi](https://github.com/earendil-works/pi): замыкает сервис и guardrails
+в полный контур защиты LLM-сессии.
+
+```
+пользователь
+   │  «Иванов просил отправить отчёт на ivanov@mail.ru»
+   ▼
+input ────────► guardrails /scan ── инъекция? ── блок (до раскрытия /skill:!)
+   │
+   ▼
+service /anonymize ── «[PERSON_1] просил отправить отчёт на [EMAIL_1]»
+   │                  (vault в PostgreSQL: стабильные ID в рамках сессии)
+   ▼
+LLM (видит только плейсхолдеры)
+   │  «[PERSON_1], отчёт отправлен на [EMAIL_1]»
+   ▼
+message_end ── service /deanonymize (по vault_key сессии)
+   │
+   ▼
+пользователь ── «Иванов, отчёт отправлен на ivanov@mail.ru»
+```
+
+Что перехватывается:
+
+| Событие Pi | Что делает pii-guard |
+|---|---|
+| `input` | скан ввода на инъекции (**до раскрытия скиллов**), анонимизация ПДн |
+| `tool_call` | маскирование ПДн в аргументах инструментов |
+| `tool_result` | скан вывода инструментов на инъекции + анонимизация ПДн в данных |
+| `message_end` | деанонимизация ответа ассистента по vault-ключу сессии |
+
+Ключевые свойства: стабильные плейсхолдеры («Иванов» → всегда `[PERSON_1]`,
+LLM может ссылаться на него в многоходовых диалогах); vault-ключ
+переживает рестарт сессии; fail-open при недоступности сервисов.
+
+Установка:
+
+```bash
+# 1. Поднять сервисы (из корня репозитория)
+docker compose up -d --build
+
+# 2. Установить extension в Pi
+mkdir -p ~/.pi/agent/extensions/pii-guard
+cp -r harness/* ~/.pi/agent/extensions/pii-guard/
+cd ~/.pi/agent/extensions/pii-guard && npm install
+```
+
+В Pi доступны команды `/pii-status` (статус) и `/pii-reset` (новая
+vault-сессия). Подробнее — [harness/README.md](harness/README.md).
+
 ## Архитектура
 
 ```
 POST /anonymize
+   │
+   ▼
+Vault (get_or_assign) ── стабильные номерованные плейсхолдеры [PERSON_1]…
    │
    ▼
 AnonymizationPipeline
@@ -169,16 +253,20 @@ AnonymizationPipeline
 _resolve_overlaps()  ── union-слияние: приоритет источника, длина, score
    │
    ▼
-mask_text()          ── замена плейсхолдерами, оффсеты оригинала сохранены
+Замена плейсхолдерами ── vault хранит связь [PERSON_1] → значение,
+                          /deanonymize восстанавливает по vault_key
 ```
 
 ## Структура репозитория
 
 ```
 docker-compose.yml     запуск из корня: anonymization (8001) + guardrails (8002)
+                       + postgres (vault, без expose)
 service/               FastAPI-сервис анонимизации (app/, tests/, Dockerfile)
 guardrails/            сервис детекции промпт-инъекций (правила RU+EN +
                        ML-модель gbv/mdeberta-ru-prompt-injection)
+harness/               pii-guard — extension для Pi coding agent
+                       (TypeScript: index.ts, client.ts, vitest-тесты)
 ```
 
 Модели дообучались на синтетике и открытых корпусах — скрипты обучения
@@ -191,10 +279,13 @@ cd service
 ../venv/bin/python -m pytest tests/ -v
 ```
 
-35 тестов сервиса: Luhn, форматы телефонов/документов, слияние пересечений,
+50 тестов сервиса: Luhn, форматы телефонов/документов, слияние пересечений,
 склейка смежных GLiNER-спанов, фильтр категорий, корректность оффсетов,
-негативные кейсы. Плюс 21 тест guardrails (правила RU/EN, негативы,
-ML-детектор): `cd guardrails && ../venv/bin/python -m pytest tests/ -q`.
+vault (стабильные ID, TTL, round-trip через API), guardrails-клиент
+(fail-open), негативные кейсы. Плюс 21 тест guardrails (правила RU/EN,
+негативы, ML-детектор): `cd guardrails && ../venv/bin/python -m pytest tests/ -q`.
+И 16 тестов harness (round-trip, стабильные ID, блок инъекций в скилле
+и tool_result): `cd harness && npx vitest run`.
 
 ## Модели
 
